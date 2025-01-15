@@ -1,0 +1,36 @@
+<div class="d-flex justify-content-between align-items-center mb-4 text-body">
+  <p class="lead fw-normal mb-0">Друзья</p>
+  <p class="mb-0"><a routerLink='/user/friends/requests' class="text-muted">Заявки в друзья</a></p>
+</div>
+@for (item of friends; track $index) {
+  <div class="card mb-4">
+    <div class="card-body p-4">
+      <div class="d-flex">
+        <div class="flex-shrink-0">
+          <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+          alt="Generic placeholder image" class="img-fluid" style="width: 180px; border-radius: 10px;">
+        </div>
+        <div class="flex-grow-1 ms-3">
+          <a [routerLink]="['/user', item.uuid]" class="stretched-link mb-1">{{ item.first_name }} {{ item.last_name }}</a>
+          <p></p>
+          <div class="d-flex justify-content-start rounded-3 p-2 mb-2 bg-body-tertiary">
+            <div>
+              <p class="small text-muted mb-1">Друзья</p>
+              <p class="mb-0">{{ item.friends_count }}</p>
+            </div>
+            <div class="px-3">
+              <p class="small text-muted mb-1">Организатор</p>
+              <p class="mb-0">976</p>
+            </div>
+            <div>
+              <p class="small text-muted mb-1">Участник</p>
+              <p class="mb-0">8.5</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+} @empty {
+  <div>Ни одного друга не найдено</div>
+}

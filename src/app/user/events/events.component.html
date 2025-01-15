@@ -1,0 +1,36 @@
+<div class="d-flex justify-content-between align-items-center mb-4 text-body">
+  <p class="lead fw-normal mb-0">События</p>
+  <p class="mb-0"><a routerLink='/user/events/add' class="text-muted">Новое событие</a></p>
+</div>
+@for (item of events; track $index) {
+  <div class="card mb-5" style="border-radius: 15px;">
+    <div class="card-body p-4">
+      <h3 class="mb-3">{{ item.title }}</h3>
+      <p class="small mb-0">
+        Автор
+        <strong>{{ item.creator.first_name }} {{ item.creator.last_name }}</strong> 
+        {{ item.created_at.toLocaleString() }}
+      </p>
+      <hr class="my-4">
+      <div class="d-flex justify-content-start align-items-center">
+        <p class="mb-0 text-uppercase"><i class="fas fa-cog me-2"></i> <span
+          class="text-muted small">settings</span></p>
+        <p class="mb-0 text-uppercase"><i class="fas fa-link ms-4 me-2"></i> <span
+          class="text-muted small">program link</span></p>
+        <p class="mb-0 text-uppercase"><i class="fas fa-ellipsis-h ms-4 me-2"></i> 
+          <span class="text-muted small">program link</span>
+          <span class="ms-3 me-4">|</span>
+        </p>
+        <a href="#!">
+          <img src="https://mdbcdn.b-cdn.net/img/Photos/Avatars/avatar-2.webp" alt="avatar"
+          class="img-fluid rounded-circle me-3" width="35">
+        </a>
+        <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-outline-dark btn-sm btn-floating">
+          <i class="fas fa-plus text-body"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+} @empty {
+  <div>Ни одного события не найдено</div>
+}
