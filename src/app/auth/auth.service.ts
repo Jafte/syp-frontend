@@ -5,6 +5,7 @@ import { environment } from '../environments/environment';
 import { User } from '../user/user.model';
 import { Router } from '@angular/router';
 import { UserService } from '../user/user.service';
+import { WebApp } from '../../telegram-web-app-sdk'
 
 @Injectable({
   providedIn: 'root',
@@ -20,6 +21,8 @@ export class AuthService {
     console.log('Инициализация приложения началась');
     return new Promise((resolve) => {
       const savedToken = localStorage.getItem('authToken');
+      const userData = WebApp.initData;
+      console.log('userData', userData);
       if (savedToken) {
         this.tokenSubject.next(savedToken);
         this.loadCurrentUser().subscribe({
@@ -34,7 +37,21 @@ export class AuthService {
         });
       } else {
         console.log('Токен не найден');
-        resolve();
+        if (userData) {
+          this.tgLogin(userData).subscribe({
+            next: () => {
+              console.log('Авторизация успешна!');
+              resolve();
+            },
+            error: (err) => {
+              console.log('Пользователь не восстановлен из-за ошибки', err.message);
+              resolve();
+            },
+          });
+        } else {
+          console.log('Где мы?');
+          resolve();
+        }
       }
     });
   }
@@ -46,7 +63,21 @@ export class AuthService {
         this.setToken(response.token);
         return this.loadCurrentUser().pipe(
           map((user: User) => {
-            this.router.navigate(['/user', user.uuid]); // Редирект после успешной авторизации
+            this.router.navigate(['/user']); // Редирект после успешной авторизации
+          })
+        );
+      }),
+    );
+  }
+
+  tgLogin(user_data: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/auth/telegram/`, {"user_data": user_data}).pipe(
+      catchError(this.handleError),
+      switchMap((response) => {
+        this.setToken(response.token);
+        return this.loadCurrentUser().pipe(
+          map((user: User) => {
+            this.router.navigate(['/user']); // Редирект после успешной авторизации
           })
         );
       }),
