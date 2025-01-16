@@ -63,7 +63,7 @@ export class AuthService {
         this.setToken(response.token);
         return this.loadCurrentUser().pipe(
           map((user: User) => {
-            this.router.navigate(['/user']); // Редирект после успешной авторизации
+            this.router.navigate(['/user/profile']); // Редирект после успешной авторизации
           })
         );
       }),
@@ -77,7 +77,7 @@ export class AuthService {
         this.setToken(response.token);
         return this.loadCurrentUser().pipe(
           map((user: User) => {
-            this.router.navigate(['/user']); // Редирект после успешной авторизации
+            this.router.navigate(['/user/profile']); // Редирект после успешной авторизации
           })
         );
       }),
