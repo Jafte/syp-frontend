@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { ClipboardService } from 'ngx-clipboard'
 import { User, UserDetail } from '../user.model';
 import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AuthService } from '../../auth/auth.service';
 import { UserService } from '../user.service';
 import { BehaviorSubject, of, switchMap } from 'rxjs';
+import { WebAppService } from '../../webapp.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,8 +17,9 @@ export class DashboardComponent implements OnInit {
   private userUUId = new BehaviorSubject<string | null>(null);
   user: UserDetail | null = null;
   currentUser: User | null = null;
+  isShared: boolean = false;
 
-  constructor(private route: ActivatedRoute, private authService: AuthService, private userService: UserService) {
+  constructor(private route: ActivatedRoute, private authService: AuthService, private userService: UserService, private webAppService: WebAppService, private clipboard: ClipboardService) {
     this.authService.getCurrentUser().subscribe((user) => {
       if (!user) {
         return
@@ -87,4 +90,10 @@ export class DashboardComponent implements OnInit {
     }
     this.userService.cancelFriendRequestToUser(userUUId).subscribe((user: UserDetail) => this.setUserDetail(user))
   }
+
+  shareProfile() {
+    this.clipboard.copy('https://t.me/ShareYourPlansBot?startapp=user_' + this.currentUser?.uuid);
+    this.isShared = true;
+  }
+
 }

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { AuthService } from './auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-auth',
@@ -13,7 +14,7 @@ export class LoginComponent {
   submitted: boolean = false;
   errorMessage: string | null = null;
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(private fb: FormBuilder, private authService: AuthService, private router: Router) {
     this.authForm = this.fb.group({
       username: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required]],
@@ -25,8 +26,9 @@ export class LoginComponent {
     if (this.authForm.valid) {
       const { username, password } = this.authForm.value;
       this.authService.login(username, password).subscribe({
-        next: () => {
-          console.log('Авторизация успешна!');
+        next: (user) => {
+          console.log('Авторизация успешна!', user);
+          this.router.navigate(['/user/profile']);
         },
         error: (err) => {
           this.errorMessage = err.message;

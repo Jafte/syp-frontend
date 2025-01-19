@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { BehaviorSubject, catchError, Observable, throwError, switchMap, map } from 'rxjs';
-import { environment } from '../environments/environment';
+import { environment } from '../../environments/environment';
 import { User } from '../user/user.model';
 import { Router } from '@angular/router';
 import { UserService } from '../user/user.service';
-import { WebApp } from '../../telegram-web-app-sdk'
+import { WebAppService } from '../webapp.service';
 
 @Injectable({
   providedIn: 'root',
@@ -15,13 +15,13 @@ export class AuthService {
   private userSubject = new BehaviorSubject<User | null>(null);
   private readonly apiUrl = environment.apiUrl;
 
-  constructor(private http: HttpClient, private router: Router, private userService: UserService) {}
+  constructor(private http: HttpClient, private router: Router, private userService: UserService, private webAppService: WebAppService) {}
 
   initialize(): Promise<void> {
     console.log('Инициализация приложения началась');
     return new Promise((resolve) => {
       const savedToken = localStorage.getItem('authToken');
-      const userData = WebApp.initData;
+      const userData = this.webAppService.getAppInitData();
       console.log('userData', userData);
       if (savedToken) {
         this.tokenSubject.next(savedToken);
@@ -39,8 +39,9 @@ export class AuthService {
         console.log('Токен не найден');
         if (userData) {
           this.tgLogin(userData).subscribe({
-            next: () => {
-              console.log('Авторизация успешна!');
+            next: (user) => {
+              console.log('Авторизация успешна!', user);
+              this.router.navigate(['/user/profile']);
               resolve();
             },
             error: (err) => {
@@ -63,7 +64,7 @@ export class AuthService {
         this.setToken(response.token);
         return this.loadCurrentUser().pipe(
           map((user: User) => {
-            this.router.navigate(['/user/profile']); // Редирект после успешной авторизации
+            return user;
           })
         );
       }),
@@ -77,7 +78,7 @@ export class AuthService {
         this.setToken(response.token);
         return this.loadCurrentUser().pipe(
           map((user: User) => {
-            this.router.navigate(['/user/profile']); // Редирект после успешной авторизации
+            return user;
           })
         );
       }),
